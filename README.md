@@ -8,6 +8,6 @@ The issue is that the `AVAssetDownloadDelegate` callbacks do not seem to fire af
 The download seems to continue, however the progress does not get updated. The solution that seems to work for now is to:
  1. Subscribe to the `UIApplication.willEnterForegroundNotification` notification
  2. Check if the device is running iOS 12 and below as the app is returns to the foreground
- 3. If it does, `cancel` and then `resume` the current download task
+ 3. If it does, `cancel` and then `resume` the download task with the url of location on the iOS device where the file was partially downloaded 
 
 This solution seems to reset the delegate and all the `AVAssetDownloadDelegate` callbacks seem to fire again.
