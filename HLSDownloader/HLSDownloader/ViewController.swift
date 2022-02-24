@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import AVFoundation
+import AVKit
 
 fileprivate enum HLSSampleSize
 {
@@ -21,7 +21,7 @@ class ViewController: UIViewController
     private let progressLabel = UILabel()
     
     private let downloadTaskIdentifier = "com.mindhyve.HLSDOWNLOADER"
-    
+
     private var backgroundConfiguration: URLSessionConfiguration?
     private var assetDownloadURLSession: AVAssetDownloadURLSession!
     private var downloadTask: AVAssetDownloadTask!
@@ -60,7 +60,7 @@ class ViewController: UIViewController
     
     private func resumeDownloadTask()
     {
-        var sourceURL = getHLSSourceURL(.large)
+        var sourceURL = getHLSSourceURL(.small)
         
         // Now Check if we have any previous download tasks to resume
         if let destinationURL = destinationURL
@@ -80,7 +80,7 @@ class ViewController: UIViewController
             downloadTask.resume()
         }
     }
-    
+
     func cancelDownloadTask()
     {
         downloadTask.cancel()
@@ -94,9 +94,26 @@ class ViewController: UIViewController
             return URL(string: "https://video.film.belet.me/45505/480/ff27c84a-6a13-4429-b830-02385592698b.m3u8")
         }
         
-        return URL(string: "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8")
+        return URL(string: "https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8")
     }
     
+    private func playMovie()
+    {
+        if let destinationURL = destinationURL
+        {
+            let playerViewController = AVPlayerViewController()
+            
+            let player = AVPlayer(url: destinationURL)
+            
+            playerViewController.player = player
+            
+            present(playerViewController, animated: true)
+            {
+                player.play()
+            }
+        }
+    }
+
     // MARK: INTENTS
     @objc
     private func downloadButtonTapped()
@@ -133,8 +150,8 @@ extension ViewController
             resumeDownloadTask()
         }
     }
-    
-    // 
+
+    //
     private func subscribeToNotifications()
     {
         NotificationCenter.default.addObserver(self,
@@ -153,10 +170,14 @@ extension ViewController: AVAssetDownloadDelegate
     {
         guard error != nil else
         {
+            // Download completes here, do what you want
+            playMovie()
             return
         }
+        
+        // Handle errors
     }
-    
+
     func urlSession(_ session: URLSession,
                     assetDownloadTask: AVAssetDownloadTask,
                     didFinishDownloadingTo location: URL)
